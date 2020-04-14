@@ -219,6 +219,54 @@ void getStats(unsigned char* inbuffer,
   
 }
 
+void getStatsFull(unsigned char* inbuffer,
+        float* M1,
+        float* M2,
+        float* M3,
+        float* M4,
+        float* maxbuffer,
+        float* minbuffer,
+        int* count,
+        int nchans,
+        int nsamps,
+        int startflag)
+        
+{
+  int ii,jj;
+  unsigned char val;
+  
+  if( startflag == 0 ){
+    for (jj=0;jj<nchans;jj++){
+      maxbuffer[jj] = inbuffer[jj];
+      minbuffer[jj] = inbuffer[jj];
+    }
+  }
+#pragma omp parallel for default(shared) private(jj,ii) shared(inbuffer)
+  for (jj=0; jj<nchans; jj++){
+    double delta, delta_n, delta_n2, term1;
+    for (ii=0; ii<nsamps; ii++){
+      val = inbuffer[(nchans*ii)+jj];
+      count[jj] += 1;
+      int n = count[jj];
+
+      delta    = val - M1[jj];
+      delta_n  = delta / n;
+      delta_n2 = delta_n * delta_n;
+      term1    = delta * delta_n * (n - 1);
+      M1[jj]  += delta_n;
+      M4[jj]  += term1 * delta_n2 * (n*n - 3*n + 3) + 6 * delta_n2 * M2[jj] - 4 * delta_n * M3[jj];
+      M3[jj]  += term1 * delta_n * (n - 2) - 3 * delta_n * M2[jj];
+      M2[jj]  += term1;
+
+      if( val > maxbuffer[jj])
+        maxbuffer[jj] = val;
+      else if( val < minbuffer[jj] )
+        minbuffer[jj] = val;
+    }
+  }
+  
+}
+
 void invertFreq(unsigned char* inbuffer,unsigned char* outbuffer,int nchans,int nsamps)
 {
 

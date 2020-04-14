@@ -2,9 +2,6 @@ import numpy as np
 import ctypes as C
 from numpy.ctypeslib import as_ctypes as as_c
 
-from sigpyproc.FoldedData import FoldedData
-from sigpyproc.FourierSeries import FourierSeries
-
 from .ctype_helper import load_lib
 lib = load_lib("libSigPyProcTim.so")
 
@@ -260,3 +257,5 @@ class TimeSeries(np.ndarray):
         return (self.rFFT()*other.rFFT()).iFFT()
             
 
+from sigpyproc.FoldedData import FoldedData
+from sigpyproc.FourierSeries import FourierSeries

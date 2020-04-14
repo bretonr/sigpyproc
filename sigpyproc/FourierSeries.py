@@ -3,9 +3,6 @@ import ctypes as C
 from sigpyproc.Utils import File
 from numpy.ctypeslib import as_ctypes as as_c
 
-from sigpyproc.TimeSeries import TimeSeries
-from sigpyproc.FoldedData import Profile
-
 from .ctype_helper import load_lib
 lib  = load_lib("libSigPyProcSpec.so")
 
@@ -279,3 +276,6 @@ class FourierSeries(np.ndarray):
             self.tofile(fftfile)
         return f"{basename}.fft", f"{basename}.inf"
 
+
+from sigpyproc.TimeSeries import TimeSeries
+from sigpyproc.FoldedData import Profile

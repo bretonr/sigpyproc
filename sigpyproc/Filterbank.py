@@ -5,7 +5,6 @@ from numpy.ctypeslib import as_ctypes as as_c
 
 from sigpyproc.Utils import rollArray
 from sigpyproc.FoldedData import FoldedData
-from sigpyproc.TimeSeries import TimeSeries
 
 from .ctype_helper import load_lib
 lib32 = load_lib("libSigPyProc32.so")
@@ -30,6 +29,13 @@ class Filterbank(object):
         self.chan_maxima = None
         self.chan_minima = None
 
+        # New statistics 
+        self.global_mean  = None
+        self.global_vars  = None
+        self.global_skews = None
+        self.global_kurts = None        
+        self.global_maxima = None
+        self.global_minima = None 
 
     def setNthreads(self,nthreads=None):
         """Set the number of threads available to OpenMP.
@@ -518,6 +524,70 @@ class Filterbank(object):
         self.chan_maxima = maxima_ar
         self.chan_minima = minima_ar
 
+    def getStatsFull(self,gulp=512):
+        """Retrieve channelwise statistics of data.
+
+        :param gulp: number of samples in each read
+        :type gulp: int
+        
+        Function creates four instance attributes:
+        
+           * :attr:`chan_means`: the mean value of each channel
+           * :attr:`chan_var`: the variance of each channel
+           * :attr:`chan_skew`: the skewness of each channel
+           * :attr:`chan_kurt`: the kurtosis of each channel
+           * :attr:`chan_min`: the minimum value of each channel
+           * :attr:`chan_max`: the maximum value of each channel
+           * :attr:`chan_min`: the minimum value of each channel
+
+        Notes:
+        some scaling needed in Mean and kurtosis. Otherwise, the trend is similar
+        """
+        maxima_ar = np.zeros(self.header.nchans,dtype="float32")
+        minima_ar = np.zeros(self.header.nchans,dtype="float32")
+        count_ar  = np.zeros(self.header.nchans,dtype="int64")
+        M1_ar  = np.zeros(self.header.nchans,dtype="float32")
+        M2_ar  = np.zeros(self.header.nchans,dtype="float32")
+        M3_ar  = np.zeros(self.header.nchans,dtype="float32")
+        M4_ar  = np.zeros(self.header.nchans,dtype="float32")
+        maxima_ar_c = as_c(maxima_ar)
+        minima_ar_c = as_c(minima_ar)
+        count_ar_c  = as_c(count_ar)
+        M1_ar_c  = as_c(M1_ar)
+        M2_ar_c  = as_c(M2_ar)
+        M3_ar_c  = as_c(M3_ar)
+        M4_ar_c  = as_c(M4_ar)
+        for nsamps,ii,data in self.readPlan(gulp):
+            self.lib.getStatsFull(as_c(data),
+                                  M1_ar_c,
+                                  M2_ar_c,
+                                  M3_ar_c,
+                                  M4_ar_c,
+                                  maxima_ar_c,
+                                  minima_ar_c,
+                                  count_ar_c,
+                                  C.c_int(self.header.nchans),
+                                  C.c_int(nsamps),
+                                  C.c_int(ii))
+
+        means_ar = M1_ar
+        var_ar   = M2_ar / self.header.nsamples
+
+        M2_ar[M2_ar == 0] = np.nan
+        skew_ar  = M3_ar / np.power(M2_ar, 1.5) * np.sqrt(self.header.nsamples)
+        kurt_ar  = M4_ar / np.power(M2_ar, 2.0) * self.header.nsamples - 3.0
+
+        skew_ar[np.isnan(skew_ar)] = 0
+        kurt_ar[np.isnan(kurt_ar)] = -3.0
+
+        self.global_mean  = means_ar
+        self.global_vars  = var_ar
+        self.global_skews = skew_ar
+        self.global_kurts = kurt_ar        
+        self.global_maxima = maxima_ar
+        self.global_minima = minima_ar       
+         
+
 class FilterbankBlock(np.ndarray):
     """Class to handle a discrete block of data in time-major order.
 
@@ -636,3 +706,4 @@ class FilterbankBlock(np.ndarray):
         new_ar.dm = dm
         return new_ar
         
+from sigpyproc.TimeSeries import TimeSeries
