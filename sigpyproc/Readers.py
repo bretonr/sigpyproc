@@ -525,7 +525,7 @@ def readDat(filename,inf=None):
 
     basename = os.path.splitext(filename)[0]
     if inf is None:
-        inf = "%s.inf"%(basename)
+        inf = f"{basename}.inf"
     if not os.path.isfile(inf):
         raise IOError("No corresponding inf file found")
     header = parseInfHeader(inf)
@@ -573,7 +573,7 @@ def readFFT(filename,inf=None):
     """
     basename = os.path.splitext(filename)[0]
     if inf is None:
-        inf = "%s.inf"%(basename)
+        inf = f"{basename}.inf"
     if not os.path.isfile(inf):
         raise IOError("No corresponding inf file found")
     header = parseInfHeader(inf)

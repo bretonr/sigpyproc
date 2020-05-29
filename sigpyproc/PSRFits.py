@@ -275,7 +275,7 @@ class SpectraInfo:
                     if ii == 0:
                         self.dat_wts_col = colnum
                     elif self.dat_wts_col != colnum:
-                        warnings.warn(f"'DAT_WTS column changes between files 0 and {ii}!")
+                        warnings.warn(f"'DAT_WTS' column changes between files 0 and {ii}!")
                     if np.any(first_subint['DAT_WTS'][:self.num_channels] != 1.0):
                         self.need_weight = True
 
@@ -287,7 +287,7 @@ class SpectraInfo:
                     if ii == 0:
                         self.dat_offs_col = colnum
                     elif self.dat_offs_col != colnum:
-                        warnings.warn(f"'DAT_OFFS column changes between files 0 and {ii}!" % ii)
+                        warnings.warn(f"'DAT_OFFS' column changes between files 0 and {ii}!")
                     if np.any(first_subint['DAT_OFFS'] != 0.0):
                         self.need_offset = True
 
@@ -299,7 +299,7 @@ class SpectraInfo:
                     if ii == 0:
                         self.dat_scl_col = colnum
                     elif self.dat_scl_col != colnum:
-                        warnings.warn(f"'DAT_SCL' column changes between files 0 and {ii}!" % ii)
+                        warnings.warn(f"'DAT_SCL' column changes between files 0 and {ii}!")
                     if np.any(first_subint['DAT_SCL'] != 1.0):
                         self.need_scale = True
 
@@ -354,70 +354,70 @@ class SpectraInfo:
         read string and return it.
         """
         result = []  # list of strings. Will be concatenated with newlines (\n).
-        result.append("From the PSRFITS file '%s':" % self.filenames[0])
-        result.append("                       HDUs = %s" % ', '.join(self.hdu_names))
-        result.append("                  Telescope = %s" % self.telescope)
-        result.append("                   Observer = %s" % self.observer)
-        result.append("                Source Name = %s" % self.source)
-        result.append("                   Frontend = %s" % self.frontend)
-        result.append("                    Backend = %s" % self.backend)
-        result.append("                 Project ID = %s" % self.project_id)
-        result.append("            Obs Date String = %s" % self.date_obs)
+        result.append(f"From the PSRFITS file '{self.filenames[0]}':")
+        result.append(f"                       HDUs = {', '.join(self.hdu_names)}")
+        result.append(f"                  Telescope = {self.telescope}")
+        result.append(f"                   Observer = {self.observer}")
+        result.append(f"                Source Name = {self.source}")
+        result.append(f"                   Frontend = {self.frontend}")
+        result.append(f"                    Backend = {self.backend}")
+        result.append(f"                 Project ID = {self.project_id}")
+        result.append(f"            Obs Date String = {self.date_obs}")
         imjd, fmjd = DATEOBS_to_MJD(self.date_obs)
-        mjdtmp = "%.14f" % fmjd
-        result.append("  MJD start time (DATE-OBS) = %5d.%14s" % (imjd, mjdtmp[2:]))
-        result.append("     MJD start time (STT_*) = %19.14f" % self.start_MJD[0])
-        result.append("                   RA J2000 = %s" % self.ra_str)
-        result.append("             RA J2000 (deg) = %-17.15g" % self.ra2000)
-        result.append("                  Dec J2000 = %s" % self.dec_str)
-        result.append("            Dec J2000 (deg) = %-17.15g" % self.dec2000)
-        result.append("                  Tracking? = %s" % self.tracking)
-        result.append("              Azimuth (deg) = %-.7g" % self.azimuth)
-        result.append("           Zenith Ang (deg) = %-.7g" % self.zenith_ang)
-        result.append("          Polarisation type = %s" % self.poln_type)
+        mjdtmp = f"{mjd:.14f}"
+        result.append(f"  MJD start time (DATE-OBS) = {imjd:5d}.{mjdtmp[2:]:14s}")
+        result.append(f"     MJD start time (STT_*) = {self.start_MJD[0]:19.14f}")
+        result.append(f"                   RA J2000 = {self.ra_str}")
+        result.append(f"             RA J2000 (deg) = {self.ra2000:-17.15g}")
+        result.append(f"                  Dec J2000 = {self.dec_str}")
+        result.append(f"            Dec J2000 (deg) = {self.dec2000:-17.15g}")
+        result.append(f"                  Tracking? = {self.tracking}")
+        result.append(f"              Azimuth (deg) = {self.azimuth:-.7g}")
+        result.append(f"           Zenith Ang (deg) = {self.zenith_ang:-.7g}")
+        result.append(f"          Polarisation type = {self.poln_type}")
         if (self.num_polns >= 2) and (not self.summed_polns):
-            numpolns = "%d" % self.num_polns
+            numpolns = f"{self.num_polns:d}"
         elif self.summed_polns:
             numpolns = "2 (summed)"
         else:
             numpolns = "1"
-        result.append("            Number of polns = %s" % numpolns)
-        result.append("          Polarisation oder = %s" % self.poln_order)
-        result.append("           Sample time (us) = %-17.15g" % (self.dt * 1e6))
-        result.append("         Central freq (MHz) = %-17.15g" % self.fctr)
-        result.append("          Low channel (MHz) = %-17.15g" % self.lo_freq)
-        result.append("         High channel (MHz) = %-17.15g" % self.hi_freq)
-        result.append("        Channel width (MHz) = %-17.15g" % self.df)
-        result.append("         Number of channels = %d" % self.num_channels)
+        result.append(f"            Number of polns = {numpolns}")
+        result.append(f"          Polarisation oder = {self.poln_order}")
+        result.append(f"           Sample time (us) = {self.dt * 1e6:-17.15g}"
+        result.append(f"         Central freq (MHz) = {self.fctr:-17.15g}")
+        result.append(f"          Low channel (MHz) = {self.lo_freq:-17.15g}")
+        result.append(f"         High channel (MHz) = {self.hi_freq:-17.15g}")
+        result.append(f"        Channel width (MHz) = {self.df:-17.15g}")
+        result.append(f"         Number of channels = {self.num_channels:d}")
         if self.chan_dm != 0.0:
-            result.append("   Orig Channel width (MHz) = %-17.15g" % self.orig_df)
-            result.append("    Orig Number of channels = %d" % self.orig_num_chan)
-            result.append("    DM used for chan dedisp = %-17.15g" % self.chan_dm)
-        result.append("      Total Bandwidth (MHz) = %-17.15g" % self.BW)
-        result.append("         Spectra per subint = %d" % self.spectra_per_subint)
-        result.append("            Starting subint = %d" % self.start_subint[0])
-        result.append("           Subints per file = %d" % self.num_subint[0])
-        result.append("           Spectra per file = %d" % self.num_spec[0])
-        result.append("        Time per file (sec) = %-.12g" % (self.num_spec[0] * self.dt))
-        result.append("              FITS typecode = %s" % self.FITS_typecode)
-        result.append("                DATA column = %d" % self.data_col)
-        result.append("            bits per sample = %d" % self.bits_per_sample)
+            result.append(f"   Orig Channel width (MHz) = {self.orig_df:-17.15g}")
+            result.append(f"    Orig Number of channels = {self.orig_num_chan:d}")
+            result.append(f"    DM used for chan dedisp = {self.chan_dm:-17.15g}")
+        result.append(f"      Total Bandwidth (MHz) = {self.BW:-17.15g}")
+        result.append(f"         Spectra per subint = {self.spectra_per_subint:d}")
+        result.append(f"            Starting subint = {self.start_subint[0]:d}")
+        result.append(f"           Subints per file = {self.num_subint[0]:d}")
+        result.append(f"           Spectra per file = {self.num_spec[0]:d}")
+        result.append(f"        Time per file (sec) = {self.num_spec[0] * self.dt:-.12g}")
+        result.append(f"              FITS typecode = {self.FITS_typecode}")
+        result.append(f"                DATA column = {self.data_col:d}")
+        result.append(f"            bits per sample = {self.bits_per_sample:d}")
         if self.bits_per_sample < 8:
             spectmp = (self.bytes_per_spectra * self.bits_per_sample) / 8
             subtmp = (self.bytes_per_subint * self.bits_per_sample) / 8
         else:
             spectmp = self.bytes_per_spectra
             subtmp = self.bytes_per_subint
-        result.append("          bytes per spectra = %d" % spectmp)
-        result.append("        samples per spectra = %d" % self.samples_per_spectra)
-        result.append("           bytes per subint = %d" % subtmp)
-        result.append("         samples per subint = %d" % self.samples_per_subint)
-        result.append("                zero offset = %-17.15g" % self.zero_offset)
-        result.append("                                 ")        
-        result.append("              Need scaling? = %s" % self.need_scale)
-        result.append("              Need offsets? = %s" % self.need_offset)
-        result.append("              Need weights? = %s" % self.need_weight)
-        result.append("        Need band inverted? = %s" % self.need_flipband)
+        result.append(f"          bytes per spectra = {spectmp:d}")
+        result.append(f"        samples per spectra = {self.samples_per_spectra:d}")
+        result.append(f"           bytes per subint = {subtmp:d}")
+        result.append(f"         samples per subint = {self.samples_per_subint:d}")
+        result.append(f"                zero offset = {self.zero_offset:-17.15g}")
+        result.append(f"                                 ")        
+        result.append(f"              Need scaling? = {self.need_scale}")
+        result.append(f"              Need offsets? = {self.need_offset}")
+        result.append(f"              Need weights? = {self.need_weight}")
+        result.append(f"        Need band inverted? = {self.need_flipband}")
 
         return '\n'.join(result)
 
@@ -469,8 +469,8 @@ def DATEOBS_to_MJD(dateobs):
     m = date_obs_re.match(dateobs)
     mjd_fracday = (float(m.group("hour")) + (float(m.group("min")) \
                                           + (float(m.group("sec")) / 60.0)) / 60.0) / 24.0
-    mjd_day = Time("%d-%d-%d" % (float(m.group("year")), float(m.group("month")), 
-                                 float(m.group("day"))), format="iso").mjd
+    mjd_day = Time(f"{float(m.group("year")):d}-{float(m.group("month")):d}-" \
+        f"{float(m.group("day")):d}", format="iso").mjd
     return int(mjd_day), mjd_fracday
 
 
