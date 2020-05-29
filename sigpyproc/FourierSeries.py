@@ -1,10 +1,10 @@
 import numpy as np
 import ctypes as C
-from sigpyproc.Utils import File
+from .Utils import File
 from numpy.ctypeslib import as_ctypes as as_c
 
-from sigpyproc.TimeSeries import TimeSeries
-from sigpyproc.FoldedData import Profile
+from . import TimeSeries
+from .FoldedData import Profile
 
 from .ctype_helper import load_lib
 lib  = load_lib("libSigPyProcSpec.so")
@@ -178,7 +178,8 @@ class FourierSeries(np.ndarray):
         lib.ifft(as_c(self),
                  as_c(tim_ar),
                  C.c_int(self.size-2))
-        return TimeSeries(tim_ar,self.header.newHeader())
+        #return TimeSeries(tim_ar,self.header.newHeader())
+        return TimeSeries.TimeSeries(tim_ar,self.header.newHeader())
 
     def rednoise(self,startwidth=6,endwidth=100,endfreq=1.0):
         """Perform rednoise removal via Presto style method.

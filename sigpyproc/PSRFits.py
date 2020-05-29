@@ -25,8 +25,8 @@ from astropy.time import Time
 from astropy.coordinates import Angle
 from astropy.time.formats import erfa
 
-import sigpyproc.HeaderParams as conf 
-from sigpyproc.Header import Header as SigpyprocHeader
+from . import HeaderParams as conf 
+from .Header import Header as SigpyprocHeader
 
 import warnings
 warnings.showwarning = lambda message, category = UserWarning, filename = '', \
@@ -383,7 +383,7 @@ class SpectraInfo:
             numpolns = "1"
         result.append(f"            Number of polns = {numpolns}")
         result.append(f"          Polarisation oder = {self.poln_order}")
-        result.append(f"           Sample time (us) = {self.dt * 1e6:-17.15g}"
+        result.append(f"           Sample time (us) = {self.dt * 1e6:-17.15g}")
         result.append(f"         Central freq (MHz) = {self.fctr:-17.15g}")
         result.append(f"          Low channel (MHz) = {self.lo_freq:-17.15g}")
         result.append(f"         High channel (MHz) = {self.hi_freq:-17.15g}")
@@ -469,8 +469,7 @@ def DATEOBS_to_MJD(dateobs):
     m = date_obs_re.match(dateobs)
     mjd_fracday = (float(m.group("hour")) + (float(m.group("min")) \
                                           + (float(m.group("sec")) / 60.0)) / 60.0) / 24.0
-    mjd_day = Time(f"{float(m.group("year")):d}-{float(m.group("month")):d}-" \
-        f"{float(m.group("day")):d}", format="iso").mjd
+    mjd_day = Time(f"{float(m.group('year')):d}-{float(m.group('month')):d}-{float(m.group('day')):d}", format="iso").mjd
     return int(mjd_day), mjd_fracday
 
 

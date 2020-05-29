@@ -2,8 +2,8 @@ import numpy as np
 import ctypes as C
 from numpy.ctypeslib import as_ctypes as as_c
 
-from sigpyproc.FoldedData import FoldedData
-from sigpyproc.FourierSeries import FourierSeries
+from .FoldedData import FoldedData
+from . import FourierSeries
 
 from .ctype_helper import load_lib
 lib = load_lib("libSigPyProcTim.so")
@@ -81,7 +81,7 @@ class TimeSeries(np.ndarray):
         lib.rfft(as_c(self),
                  as_c(fft_ar),
                  fftsize)
-        return FourierSeries(fft_ar,self.header.newHeader())
+        return FourierSeries.FourierSeries(fft_ar,self.header.newHeader())
 
     def runningMean(self,window=10001):
         """Filter time series with a running mean. 

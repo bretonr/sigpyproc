@@ -1,8 +1,8 @@
 import numpy as np
-import sigpyproc.HeaderParams as conf
+from . import HeaderParams as conf
 from os.path import splitext
 from struct import pack
-from sigpyproc.Utils import File
+from .Utils import File
 
 class Header(dict):
     """Container object to handle observation metadata.
