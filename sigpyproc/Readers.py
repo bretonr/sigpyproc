@@ -135,13 +135,13 @@ class FilReader(Filterbank):
         
         for ii,block,skip in blocks:
             if verbose:
-                sys.stdout.write("Percentage complete: %d%%\r"%(100*ii/nreads))
+                sys.stdout.write(f"Percentage complete: {100*ii/nreads:d}%\r")
                 sys.stdout.flush()
             data = self._file.cread(block)
             self._file.seek(skip*self.itemsize//self.bitfact,os.SEEK_CUR)
             yield int(block/self.header.nchans),int(ii),data
         if verbose:
-            print("Execution time: %f seconds     \n"%(time.time()-tstart))
+            print(f"Execution time: {time.time()-tstart} seconds     \n")
 
 
 
@@ -165,7 +165,7 @@ class FitsReader(Filterbank):
 
         psrfitsfn = psrfitslist[0]
         if not os.path.isfile(psrfitsfn):
-            raise ValueError("ERROR: File does not exist!\n\t(%s)" % psrfitsfn)
+            raise ValueError(f"ERROR: File does not exist!\n\t({psrfitsfn})")
         self.filename = psrfitsfn
         self.filelist = psrfitslist
         self.fileid   = 0
@@ -210,7 +210,7 @@ class FitsReader(Filterbank):
         elif trunc == 0:
             data = data[skip:]
         else:
-            raise ValueError("Number of bins to truncate is negative: %d" % trunc)
+            raise ValueError(f"Number of bins to truncate is negative: {trunc:d}")
 
         # Transpose the data (return as nchan, nsamp)
         data = data.transpose()
@@ -297,7 +297,7 @@ class FitsReader(Filterbank):
         
         for ii,block,skipback in blocks:
             if verbose:
-                sys.stdout.write("Percentage complete: %d%%\r"%(100*ii/nreads))
+                sys.stdout.write(f"Percentage complete: {100*ii/nreads:d}%\r")
                 sys.stdout.flush()
 
             # Calculate starting subint and ending subint
@@ -317,13 +317,13 @@ class FitsReader(Filterbank):
             elif trunc == 0:
                 data = data[skip:]
             else:
-                raise ValueError("Number of bins to truncate is negative: %d" % trunc)
+                raise ValueError(f"Number of bins to truncate is negative: {trunc:d}")
 
             start    = start + block + skipback
             yield int(block), int(ii), data.ravel()
 
         if verbose:
-            print("Execution time: %f seconds     \n"%(time.time()-tstart))
+            print(f"Execution time: {time.time()-tstart:f} seconds     \n")
 
 
 
@@ -668,7 +668,7 @@ def parseSigprocHeader(filename):
             print("Could not convert to unicode: {0}".format(str(e)))
 
         if not key in conf.header_keys:
-            print("'%s' not recognised header key"%(key))
+            print(f"'{key}' not recognised header key")
             return None
 
         if conf.header_keys[key] == "str":

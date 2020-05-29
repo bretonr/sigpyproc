@@ -206,7 +206,7 @@ class SpectraInfo:
                 # Compute the starting spectra from the times
                 MJDf = self.start_MJD[ii] - self.start_MJD[0]
                 if MJDf < 0.0:
-                    raise ValueError(f"File {ii}seems to be from before file 0!")
+                    raise ValueError(f"File {ii} seems to be from before file 0!")
 
                 self.start_spec[ii] = int(MJDf * erfa.DAYSEC / self.dt + 0.5)
 
